@@ -4,7 +4,7 @@ A beginner Friendly "Railway Booking System" using Java
 
 The Railway Booking System is a console-based Java project that demonstrates the use of Object-Oriented Programming (OOP) concepts in a real-world application. It allows users (passengers) to view available trains, book tickets, and manage basic railway reservations in a simplified manner.
 
-##🎯 Objective##
+#🎯 Objective
 
 The main goal of this project is to provide a basic ticket booking system while showcasing the four pillars of OOP: Encapsulation, Inheritance, Polymorphism, and Abstraction.
 
