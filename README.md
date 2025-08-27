@@ -1,4 +1,5 @@
 🚆 #Railway Booking System (Java OOP Project)
+
 📌 Project Description
 
 The Railway Booking System is a beginner-friendly console-based Java project that demonstrates the use of Object-Oriented Programming (OOP) concepts in a real-world application.
@@ -18,11 +19,11 @@ Abstraction
 
 🧩 Features
 
-✔️ View Available Trains – Displays all trains along with train number, name, route, and available seats.
-✔️ Book Tickets – Passengers can enter their details and book tickets if seats are available.
-✔️ Auto Ticket Generation – Each booking generates a unique ticket ID with passenger and train details.
-✔️ Seat Management – Once a booking is done, available seats are reduced automatically.
-✔️ Error Handling – If the train is not found or no seats are available, the system shows a proper message.
+ View Available Trains – Displays all trains along with train number, name, route, and available seats.
+ Book Tickets – Passengers can enter their details and book tickets if seats are available.
+ Auto Ticket Generation – Each booking generates a unique ticket ID with passenger and train details.
+ Seat Management – Once a booking is done, available seats are reduced automatically.
+ Error Handling – If the train is not found or no seats are available, the system shows a proper message.
 
 ⚙️ OOP Concepts Used
 
