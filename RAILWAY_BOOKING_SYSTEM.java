@@ -72,9 +72,12 @@ class train {
 public class RAILWAY_BOOKING_SYSTEM {
     public static void main(String[] args) {
         System.out.println("Welcome to the Railway Booking System!");
-        // Additional code for the railway booking system would go here
-        train train1 = new train();
-        //(101, "Express Line", "CityA", "CityB", 100);
-        
+        Scanner sc = new Scanner(System.in);
+        System.out.println("\n===== Railway Booking System =====");
+            System.out.println("1. Admin Login");
+            System.out.println("2. User Menu");
+            System.out.println("0. Exit");
+            System.out.print("Enter choice: ");
+            int choice = sc.nextInt();
     }
 }

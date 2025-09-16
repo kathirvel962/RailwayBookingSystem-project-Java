@@ -75,4 +75,4 @@ Ticket cancellation
 
 File/Database storage
 
-GUI (Swing/JavaFX)
+
