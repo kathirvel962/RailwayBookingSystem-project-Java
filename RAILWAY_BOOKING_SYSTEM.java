@@ -1,6 +1,6 @@
 import java.util.*;
 
-// Train class
+// Train class (Encapsulation)
 class Train {
     private int trainNo;
     private String trainName;
@@ -8,6 +8,7 @@ class Train {
     private String destination;
     private int totalSeats;
     private int availableSeats;
+    private Map<TravelClass, Double> fares;
 
     public Train(int trainNo, String trainName, String source, String destination, int totalSeats) {
         this.trainNo = trainNo;
@@ -16,6 +17,10 @@ class Train {
         this.destination = destination;
         this.totalSeats = totalSeats;
         this.availableSeats = totalSeats;
+        this.fares = new HashMap<>();
+        this.fares.put(TravelClass.FIRST_AC, 1000.0);
+        this.fares.put(TravelClass.SECOND_SLEEPER, 500.0);
+        this.fares.put(TravelClass.THIRD_SLEEPER, 300.0);
     }
 
     public int getTrainNo() { return trainNo; }
@@ -24,60 +29,111 @@ class Train {
     public String getDestination() { return destination; }
     public int getTotalSeats() { return totalSeats; }
     public int getAvailableSeats() { return availableSeats; }
+    public void setAvailableSeats(int availableSeats) { this.availableSeats = availableSeats; }
+    public double getFare(TravelClass travelClass) { return fares.get(travelClass); }
 
-    public boolean bookSeat(int count) {
-        if (availableSeats >= count) {
-            availableSeats -= count;
+    public boolean bookSeat() {
+        if (availableSeats > 0) {
+            availableSeats--;
             return true;
         }
         return false;
     }
 
+    public void cancelSeat() {
+        if (availableSeats < totalSeats) {
+            availableSeats++;
+        }
+    }
+
     @Override
     public String toString() {
         return "Train No: " + trainNo + ", Name: " + trainName + ", From: " + source +
-                ", To: " + destination + ", Seats: " + availableSeats + "/" + totalSeats;
+                ", To: " + destination + ", Seats Available: " + availableSeats + "/" + totalSeats;
     }
 }
 
-// Ticket class
-class Ticket {
-    private static int ticketCounter = 1;
-    private int ticketId;
-    private String username;
-    private Train train;
-    private int seatCount;
+// User class (Abstraction, base for Passenger)
+abstract class User {
+    private String name;
+    private int age;
 
-    public Ticket(String username, Train train, int seatCount) {
-        this.ticketId = ticketCounter++;
-        this.username = username;
-        this.train = train;
-        this.seatCount = seatCount;
+    public User(String name, int age) {
+        this.name = name;
+        this.age = age;
     }
+
+    public String getName() { return name; }
+    public int getAge() { return age; }
+
+    // Polymorphism: to be overridden
+    public void displayUser() {
+        System.out.println("User: " + name + ", Age: " + age);
+    }
+}
+
+// Passenger class (Inheritance, Polymorphism)
+class Passenger extends User {
+    private String idProof;
+
+    public Passenger(String name, int age, String idProof) {
+        super(name, age);
+        this.idProof = idProof;
+    }
+
+    public String getIdProof() { return idProof; }
+
+    @Override
+    public void displayUser() {
+        System.out.println("Passenger: " + getName() + ", Age: " + getAge() + ", ID: " + idProof);
+    }
+}
+
+// Ticket class (Encapsulation, auto ticket generation)
+class Ticket {
+    private static int counter = 1000;
+    private final int ticketId;
+    private Passenger passenger;
+    private Train train;
+    private TravelClass travelClass;
+
+    public Ticket(Passenger passenger, Train train, TravelClass travelClass) {
+        this.ticketId = ++counter;
+        this.passenger = passenger;
+        this.train = train;
+        this.travelClass = travelClass;
+    }
+
+    public int getTicketId() { return ticketId; }
+    public Passenger getPassenger() { return passenger; }
+    public Train getTrain() { return train; }
+    public TravelClass getTravelClass() { return travelClass; }
 
     @Override
     public String toString() {
-        return "Ticket ID: " + ticketId + ", User: " + username + 
-               ", Train: " + train.getTrainName() + " (" + train.getTrainNo() + ")" +
-               ", Seats Booked: " + seatCount;
+        return "Ticket ID: " + ticketId + "\n" +
+                "Passenger: " + passenger.getName() + ", Age: " + passenger.getAge() + ", ID: " + passenger.getIdProof() + "\n" +
+                "Train: " + train.getTrainNo() + " - " + train.getTrainName() + "\n" +
+                "Route: " + train.getSource() + " to " + train.getDestination() + "\n" +
+                "Class: " + travelClass + ", Fare: " + train.getFare(travelClass);
     }
 }
 
-// BookingSystem class
+// BookingSystem class (Abstraction)
 class BookingSystem {
     private List<Train> trains = new ArrayList<>();
     private List<Ticket> tickets = new ArrayList<>();
 
+    public BookingSystem() {
+        // Add some default trains
+       
+    }
     public void addTrain(Train train) {
         trains.add(train);
     }
 
     public void viewTrains() {
         System.out.println("\nAvailable Trains:");
-        if (trains.isEmpty()) {
-            System.out.println("No trains available at the moment.");
-            return;
-        }
         for (Train t : trains) {
             System.out.println(t);
         }
@@ -90,77 +146,71 @@ class BookingSystem {
         return null;
     }
 
-    public Ticket bookTicket(String username, int trainNo, int seatCount) {
+    public Ticket bookTicket(Passenger passenger, int trainNo, TravelClass travelClass) {
         Train train = findTrain(trainNo);
         if (train == null) {
-            System.out.println("❌ Train not found.");
+            System.out.println("Train not found!");
             return null;
         }
-        if (train.bookSeat(seatCount)) {
-            Ticket ticket = new Ticket(username, train, seatCount);
-            tickets.add(ticket);
-            System.out.println("✅ Ticket booked successfully!");
-            return ticket;
-        } else {
-            System.out.println("❌ Not enough seats available.");
+        if (train.getAvailableSeats() <= 0) {
+            System.out.println("No seats available on this train!");
             return null;
         }
-    }
-
-    public void viewUserTickets(String username) {
-        System.out.println("\nYour Bookings:");
-        boolean found = false;
-        for (Ticket t : tickets) {
-            if (t.toString().contains("User: " + username)) {
-                System.out.println(t);
-                found = true;
-            }
-        }
-        if (!found) {
-            System.out.println("No bookings found.");
-        }
+        train.bookSeat();
+        Ticket ticket = new Ticket(passenger, train, travelClass);
+        tickets.add(ticket);
+        return ticket;
     }
 }
 
-// Main Class
+enum TravelClass {
+    FIRST_AC,
+    SECOND_SLEEPER,
+    THIRD_SLEEPER
+}
+
 public class RAILWAY_BOOKING_SYSTEM {
+    // In-memory user storage: username -> password
     private static Map<String, String> userCredentials = new HashMap<>();
     private static String loggedInUser = null;
     private static boolean isAdminLoggedIn = false;
 
-    private static BookingSystem bookingSystem = new BookingSystem();
-
-    private static final String ADMIN_USERNAME = "admin";
-    private static final String ADMIN_PASSWORD = "admin123";
+    private static final String ADMIN_USERNAME = "kathir";
+    private static final String ADMIN_PASSWORD = "kathir123";
 
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-
+        BookingSystem bookingSystem = new BookingSystem();
         while (true) {
-            System.out.println("\n===== Railway Management System =====");
+            System.out.println("\n===== Railway Booking System =====");
             System.out.println("1. Admin Login");
             System.out.println("2. User Login");
             System.out.println("3. User Registration");
             System.out.println("4. View Available Trains");
+            System.out.println("5. Book Ticket (User Only)");
             System.out.println("0. Exit");
             System.out.print("Enter choice: ");
             int choice = sc.nextInt();
             sc.nextLine();
-
             switch (choice) {
-                case 1: // Admin login
+                case 1:
+                    if (isAdminLoggedIn) {
+                        System.out.println("Already logged in as admin.");
+                        break;
+                    }
                     System.out.print("Enter admin username: ");
                     String adminUser = sc.nextLine();
                     System.out.print("Enter admin password: ");
                     String adminPass = sc.nextLine();
                     if (ADMIN_USERNAME.equals(adminUser) && ADMIN_PASSWORD.equals(adminPass)) {
                         isAdminLoggedIn = true;
-                        System.out.println(" Admin login successful!");
+                        System.out.println("Admin login successful!");
+                        // Admin features: add train, view trains
                         boolean adminMenu = true;
                         while (adminMenu) {
                             System.out.println("\n--- Admin Panel ---");
                             System.out.println("1. Add Train");
-                            System.out.println("2. View All Trains");
+                            System.out.println("2. View Trains");
                             System.out.println("0. Logout");
                             System.out.print("Enter choice: ");
                             int adminChoice = sc.nextInt();
@@ -179,24 +229,12 @@ public class RAILWAY_BOOKING_SYSTEM {
                                     System.out.print("Enter Total Seats: ");
                                     int totalSeats = sc.nextInt();
                                     sc.nextLine();
-
-                                    Train existingTrain = bookingSystem.findTrain(trainNo);
-                                    if (existingTrain != null) {
-                                        System.out.println(" Train number already exists!");
-                                        break;
-                                    }
-
-                                    Train newTrain = new Train(trainNo, trainName, source, destination, totalSeats);
-                                    bookingSystem.addTrain(newTrain);
-
-                                    System.out.println(" Train added successfully!");
-                                    System.out.println("Train Details: " + newTrain);
+                                    bookingSystem.addTrain(new Train(trainNo, trainName, source, destination, totalSeats));
+                                    System.out.println("Train added successfully!");
                                     break;
-
                                 case 2:
                                     bookingSystem.viewTrains();
                                     break;
-
                                 case 0:
                                     isAdminLoggedIn = false;
                                     adminMenu = false;
@@ -207,11 +245,10 @@ public class RAILWAY_BOOKING_SYSTEM {
                             }
                         }
                     } else {
-                        System.out.println(" Invalid admin credentials.");
+                        System.out.println("Invalid admin credentials.");
                     }
                     break;
-
-                case 2: // User login
+                case 2:
                     if (loggedInUser != null) {
                         System.out.println("Already logged in as user: " + loggedInUser);
                         break;
@@ -222,62 +259,16 @@ public class RAILWAY_BOOKING_SYSTEM {
                     String password = sc.nextLine();
                     if (userCredentials.containsKey(username) && userCredentials.get(username).equals(password)) {
                         loggedInUser = username;
-                        System.out.println(" User login successful!");
-
-                        // User Menu
-                        boolean userMenu = true;
-                        while (userMenu) {
-                            System.out.println("\n--- User Menu ---");
-                            System.out.println("1. View Available Trains");
-                            System.out.println("2. Book Ticket");
-                            System.out.println("3. View My Tickets");
-                            System.out.println("0. Logout");
-                            System.out.print("Enter choice: ");
-                            int userChoice = sc.nextInt();
-                            sc.nextLine();
-                            switch (userChoice) {
-                                case 1:
-                                    bookingSystem.viewTrains();
-                                    break;
-
-                                case 2:
-                                    bookingSystem.viewTrains();
-                                    System.out.print("Enter Train No to book: ");
-                                    int trainNo = sc.nextInt();
-                                    System.out.print("Enter number of seats: ");
-                                    int seats = sc.nextInt();
-                                    sc.nextLine();
-                                    Ticket ticket = bookingSystem.bookTicket(loggedInUser, trainNo, seats);
-                                    if (ticket != null) {
-                                        System.out.println(ticket);
-                                    }
-                                    break;
-
-                                case 3:
-                                    bookingSystem.viewUserTickets(loggedInUser);
-                                    break;
-
-                                case 0:
-                                    loggedInUser = null;
-                                    userMenu = false;
-                                    System.out.println("User logged out.");
-                                    break;
-
-                                default:
-                                    System.out.println("Invalid choice.");
-                            }
-                        }
-
+                        System.out.println("User login successful!");
                     } else {
-                        System.out.println(" Invalid username or password.");
+                        System.out.println("Invalid username or password.");
                     }
                     break;
-
-                case 3: // User registration
+                case 3:
                     System.out.print("Choose a username: ");
                     String newUser = sc.nextLine();
                     if (userCredentials.containsKey(newUser)) {
-                        System.out.println(" Username already exists.");
+                        System.out.println("Username already exists.");
                         break;
                     }
                     System.out.print("Choose a password: ");
@@ -285,16 +276,63 @@ public class RAILWAY_BOOKING_SYSTEM {
                     userCredentials.put(newUser, newPass);
                     System.out.println("Registration successful! You can now log in.");
                     break;
-
-                case 4: // View trains
+                case 4:
                     bookingSystem.viewTrains();
                     break;
-
-                case 0: // Exit
-                    System.out.println(" Thank you for using the Railway Management System!");
-                    sc.close();
+                case 5:
+                    if (loggedInUser == null) {
+                        System.out.println("You must be logged in as a user to book tickets.");
+                        break;
+                    }
+                    System.out.print("Enter Name: ");
+                    String name = sc.nextLine();
+                    System.out.print("Enter Age: ");
+                    int age = sc.nextInt();
+                    sc.nextLine();
+                    System.out.print("Enter ID Proof: ");
+                    String idProof = sc.nextLine();
+                    Passenger passenger = new Passenger(name, age, idProof);
+                    System.out.print("Enter Train Number: ");
+                    int trainNoToBook = sc.nextInt();
+                    sc.nextLine();
+                    // Show fares for each class for the selected train
+                    Train selectedTrain = bookingSystem.findTrain(trainNoToBook);
+                    if (selectedTrain == null) {
+                        System.out.println("Invalid train number.");
+                        break;
+                    }
+                    System.out.println(String.format(
+                            "Select Class: 1) First AC (%.2f)  2) Second Sleeper (%.2f)  3) Third Sleeper (%.2f)",
+                            selectedTrain.getFare(TravelClass.FIRST_AC),
+                            selectedTrain.getFare(TravelClass.SECOND_SLEEPER),
+                            selectedTrain.getFare(TravelClass.THIRD_SLEEPER)));
+                    int classChoice = sc.nextInt();
+                    sc.nextLine();
+                    TravelClass t=null;
+                    switch (classChoice) {
+                        case 1:
+                            t = TravelClass.FIRST_AC;
+                            break;
+                        case 2:
+                            t = TravelClass.SECOND_SLEEPER;
+                            break;
+                        case 3:
+                            t = TravelClass.THIRD_SLEEPER;
+                            break;
+                        default:
+                            System.out.println("Invalid class choice.");
+                            break;
+                    }
+                    Ticket ticket = bookingSystem.bookTicket(passenger, trainNoToBook,t);
+                    if (ticket != null) {
+                        System.out.println("\nBooking Successful!\n" + ticket);
+                    } else {
+                        System.out.println("Booking Failed.");
+                    }
+                    break;
+                case 0:
+                    System.out.println("Thank you for using the Railway Booking System!");
                     return;
-
                 default:
                     System.out.println("Invalid choice. Try again.");
             }
