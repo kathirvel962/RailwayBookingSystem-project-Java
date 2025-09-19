@@ -161,6 +161,19 @@ class BookingSystem {
         tickets.add(ticket);
         return ticket;
     }
+
+    // Remove a train and any associated tickets
+    public boolean removeTrain(int trainNo) {
+        Train target = findTrain(trainNo);
+        if (target == null) return false;
+        // Remove the train
+        boolean removed = trains.remove(target);
+        if (removed) {
+            // Remove all tickets for this train
+            tickets.removeIf(t -> t.getTrain().getTrainNo() == trainNo);
+        }
+        return removed;
+    }
 }
 
 enum TravelClass {
@@ -211,6 +224,7 @@ public class RAILWAY_BOOKING_SYSTEM {
                             System.out.println("\n--- Admin Panel ---");
                             System.out.println("1. Add Train");
                             System.out.println("2. View Trains");
+                            System.out.println("3. Delete Train");
                             System.out.println("0. Logout");
                             System.out.print("Enter choice: ");
                             int adminChoice = sc.nextInt();
@@ -234,6 +248,17 @@ public class RAILWAY_BOOKING_SYSTEM {
                                     break;
                                 case 2:
                                     bookingSystem.viewTrains();
+                                    break;
+                                case 3:
+                                    System.out.print("Enter Train No to delete: ");
+                                    int trainNoToDelete = sc.nextInt();
+                                    sc.nextLine();
+                                    boolean ok = bookingSystem.removeTrain(trainNoToDelete);
+                                    if (ok) {
+                                        System.out.println("Train " + trainNoToDelete + " deleted successfully (associated tickets removed).");
+                                    } else {
+                                        System.out.println("Train not found.");
+                                    }
                                     break;
                                 case 0:
                                     isAdminLoggedIn = false;
