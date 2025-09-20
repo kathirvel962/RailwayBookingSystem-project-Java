@@ -138,6 +138,13 @@ class Ticket {
 
 // BookingSystem class (Abstraction)
 class BookingSystem {
+    public void sortTrainsByAvailableSeats() {
+        trains.sort((a, b) -> Integer.compare(b.getAvailableSeats(), a.getAvailableSeats()));
+    }
+
+    public void sortTrainsByName() {
+        trains.sort((a, b) -> a.getTrainName().compareToIgnoreCase(b.getTrainName()));
+    }
     private List<Train> trains = new ArrayList<>();
     private List<Ticket> tickets = new ArrayList<>();
 
@@ -234,7 +241,9 @@ public class RAILWAY_BOOKING_SYSTEM {
                             System.out.println("\n***** Admin Panel ******");
                             System.out.println("1. Add Train");
                             System.out.println("2. View Trains");
-                            System.out.println("3. Delete Train");
+                            System.out.println("3. Sort Trains by Available Seats");
+                            System.out.println("4. Sort Trains by Name");
+                            System.out.println("5. Delete Train");
                             System.out.println("0. Logout");
                             System.out.println("***************************");
                             System.out.print("Enter choice: ");
@@ -261,6 +270,16 @@ public class RAILWAY_BOOKING_SYSTEM {
                                     bookingSystem.viewTrains();
                                     break;
                                 case 3:
+                                    bookingSystem.sortTrainsByAvailableSeats();
+                                    System.out.println("Trains sorted by available seats (descending).");
+                                    bookingSystem.viewTrains();
+                                    break;
+                                case 4:
+                                    bookingSystem.sortTrainsByName();
+                                    System.out.println("Trains sorted by name (A-Z).");
+                                    bookingSystem.viewTrains();
+                                    break;
+                                case 5:
                                     System.out.print("Enter Train No to delete: ");
                                     int trainNoToDelete = sc.nextInt();
                                     sc.nextLine();
@@ -302,6 +321,8 @@ public class RAILWAY_BOOKING_SYSTEM {
                             System.out.println("\n####### User Menu #######");
                             System.out.println("1. View Available Trains");
                             System.out.println("2. Book Ticket");
+                            System.out.println("3. Sort Trains by Available Seats");
+                            System.out.println("4. Sort Trains by Name");
                             System.out.println("0. Logout");
                             System.out.println("############################");
                             System.out.print("Enter choice: ");
@@ -373,6 +394,16 @@ public class RAILWAY_BOOKING_SYSTEM {
                                             System.out.println("Booking Failed.");
                                         }
                                     }
+                                    break;
+                                case 3:
+                                    bookingSystem.sortTrainsByAvailableSeats();
+                                    System.out.println("Trains sorted by available seats (descending).");
+                                    bookingSystem.viewTrains();
+                                    break;
+                                case 4:
+                                    bookingSystem.sortTrainsByName();
+                                    System.out.println("Trains sorted by name (A-Z).");
+                                    bookingSystem.viewTrains();
                                     break;
                                 case 0:
                                     loggedInUser = null;
