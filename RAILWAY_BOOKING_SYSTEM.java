@@ -48,7 +48,7 @@ class Train {
 
     @Override
     public String toString() {
-        return "Train No: " + trainNo + ", Name: " + trainName + ", From: " + source +
+        return "TrainNo: " + trainNo + ", Name: " + trainName + ", From: " + source +
                 ", To: " + destination + ", Seats Available: " + availableSeats + "/" + totalSeats;
     }
 }
@@ -61,6 +61,7 @@ abstract class User {
     public User(String name, int age) {
         this.name = name;
         this.age = age;
+
     }
 
     public String getName() { return name; }
@@ -106,8 +107,6 @@ class Ticket {
         this.passenger = passenger;
         this.train = train;
         this.travelClass = travelClass;
-
-        // Generate PNR: TrainNo + TicketId
         this.pnr = "PNR" + train.getTrainNo() + ticketId;
     }
 
@@ -168,7 +167,7 @@ class BookingSystem {
         return ticket;
     }
 
-    // Remove a train and any associated tickets
+    
     public boolean removeTrain(int trainNo) {
         Train target = findTrain(trainNo);
         if (target == null) return false;
@@ -242,7 +241,7 @@ public class RAILWAY_BOOKING_SYSTEM {
                                     String trainName = sc.nextLine();
                                     System.out.print("Enter Source: ");
                                     String source = sc.nextLine();
-                                    System.out.print("Enter Destination: ");
+                                    System.out.print("Enter Destination:  ");
                                     String destination = sc.nextLine();
                                     System.out.print("Enter Total Seats: ");
                                     int totalSeats = sc.nextInt();
