@@ -5,201 +5,6 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Scanner;
 
-
-
-
-// Train class (Encapsulation)
-class Train {
-    private int trainNo;
-    private String trainName;
-    private String source;
-    private String destination;
-    private int totalSeats;
-    private int availableSeats;
-    private Map<TravelClass, Double> fares;
-
-    public Train(int trainNo, String trainName, String source, String destination, int totalSeats) {
-        this.trainNo = trainNo;
-        this.trainName = trainName;
-        this.source = source;
-        this.destination = destination;
-        this.totalSeats = totalSeats;
-        this.availableSeats = totalSeats;
-        this.fares = new HashMap<>();
-        this.fares.put(TravelClass.FIRST_AC, 1000.0);
-        this.fares.put(TravelClass.SECOND_SLEEPER, 500.0);
-        this.fares.put(TravelClass.THIRD_SLEEPER, 300.0);
-    }
-
-    public int getTrainNo() { return trainNo; }
-    public String getTrainName() { return trainName; }
-    public String getSource() { return source; }
-    public String getDestination() { return destination; }
-    public int getTotalSeats() { return totalSeats; }
-    public int getAvailableSeats() { return availableSeats; }
-    public void setAvailableSeats(int availableSeats) { this.availableSeats = availableSeats; }
-    public double getFare(TravelClass travelClass) { return fares.get(travelClass); }
-
-    public boolean bookSeat() {
-        if (availableSeats > 0) {
-            availableSeats--;
-            return true;
-        }
-        return false;
-    }
-
-    public void cancelSeat() {
-        if (availableSeats < totalSeats) {
-            availableSeats++;
-        }
-    }
-
-    @Override
-    public String toString() {
-        return "TrainNo: " + trainNo + ", Name: " + trainName + ", From: " + source +
-                ", To: " + destination + ", Seats Available: " + availableSeats + "/" + totalSeats;
-    }
-}
-
-// User class (Abstraction, base for Passenger)
-abstract class User {
-    private String name;
-    private int age;
-
-    public User(String name, int age) {
-        this.name = name;
-        this.age = age;
-
-    }
-
-    public String getName() { return name; }
-    public int getAge() { return age; }
-
-    // Polymorphism: to be overridden
-    public void displayUser() {
-        System.out.println("User: " + name + ", Age: " + age);
-    }
-}
-
-// Passenger class (Inheritance, Polymorphism)
-class Passenger extends User {
-    private String idProof;
-    private String mealChoice;
-
-    public Passenger(String name, int age, String idProof, String mealChoice) {
-        super(name, age);
-        this.idProof = idProof;
-        this.mealChoice = mealChoice;
-    }
-
-    public String getIdProof() { return idProof; }
-    public String getMealChoice() { return mealChoice; }
-
-    @Override
-    public void displayUser() {
-        System.out.println("Passenger: " + getName() + ", Age: " + getAge() + ", ID: " + idProof + ", Meal: " + mealChoice);
-    }
-}
-
-// Ticket class (Encapsulation, auto ticket + PNR generation)
-class Ticket {
-    private static int counter = 1000;
-    private final int ticketId;
-    private final String pnr;
-    private Passenger passenger;
-    private Train train;
-    private TravelClass travelClass;
-
-    public Ticket(Passenger passenger, Train train, TravelClass travelClass) {
-        this.ticketId = ++counter;
-        this.passenger = passenger;
-        this.train = train;
-        this.travelClass = travelClass;
-        this.pnr = "PNR" + train.getTrainNo() + ticketId;
-    }
-
-    public int getTicketId() { return ticketId; }
-    public String getPnr() { return pnr; }
-    public Passenger getPassenger() { return passenger; }
-    public Train getTrain() { return train; }
-    public TravelClass getTravelClass() { return travelClass; }
-
-    @Override
-    public String toString() {
-        return "PNR: " + pnr + "\n" +
-                "Ticket ID: " + ticketId + "\n" +
-                "Passenger: " + passenger.getName() + ", Age: " + passenger.getAge() + ", ID: " + passenger.getIdProof() + "\n" +
-                "Train: " + train.getTrainNo() + " - " + train.getTrainName() + "\n" +
-                "Route: " + train.getSource() + " to " + train.getDestination() + "\n" +
-                "Class: " + travelClass + ", Fare: " + train.getFare(travelClass) +
-                (passenger.getMealChoice().equalsIgnoreCase("yes") ? " + Meal Included" : "");
-    }
-}
-
-// BookingSystem class (Abstraction)
-class BookingSystem {
-    public void sortTrainsByAvailableSeats() {
-        trains.sort((a, b) -> Integer.compare(b.getAvailableSeats(), a.getAvailableSeats()));
-    }
-
-    public void sortTrainsByName() {
-        trains.sort((a, b) -> a.getTrainName().compareToIgnoreCase(b.getTrainName()));
-    }
-    private List<Train> trains = new ArrayList<>();
-    private List<Ticket> tickets = new ArrayList<>();
-
-    public void addTrain(Train train) {
-        trains.add(train);
-    }
-
-    public void viewTrains() {
-        System.out.println("\nAvailable Trains:");
-        for (Train t : trains) {
-            System.out.println(t);
-        }
-    }
-
-    public Train findTrain(int trainNo) {
-        for (Train t : trains) {
-            if (t.getTrainNo() == trainNo) return t;
-        }
-        return null;
-    }
-
-    public Ticket bookTicket(Passenger passenger, int trainNo, TravelClass travelClass) {
-        Train train = findTrain(trainNo);
-        if (train == null) {
-            System.out.println("Train not found!");
-            return null;
-        }
-        if (train.getAvailableSeats() <= 0) {
-            System.out.println("No seats available on this train!");
-            return null;
-        }
-        train.bookSeat();
-        Ticket ticket = new Ticket(passenger, train, travelClass);
-        tickets.add(ticket);
-        return ticket;
-    }
-
-    
-    public boolean removeTrain(int trainNo) {
-        Train target = findTrain(trainNo);
-        if (target == null) return false;
-        boolean removed = trains.remove(target);
-        if (removed) {
-            tickets.removeIf(t -> t.getTrain().getTrainNo() == trainNo);
-        }
-        return removed;
-    }
-}
-
-enum TravelClass {
-    FIRST_AC,
-    SECOND_SLEEPER,
-    THIRD_SLEEPER
-}
-
 public class RAILWAY_BOOKING_SYSTEM {
     private static Map<String, String> userCredentials = new HashMap<>();//used to fill the user name and password
     private static String loggedInUser = null; //to check the user is logged in or not
@@ -442,3 +247,198 @@ public class RAILWAY_BOOKING_SYSTEM {
         }
     }
 }
+
+
+// Train class (Encapsulation)
+class Train {
+    private int trainNo;
+    private String trainName;
+    private String source;
+    private String destination;
+    private int totalSeats;
+    private int availableSeats;
+    private Map<TravelClass, Double> fares;
+
+    public Train(int trainNo, String trainName, String source, String destination, int totalSeats) {
+        this.trainNo = trainNo;
+        this.trainName = trainName;
+        this.source = source;
+        this.destination = destination;
+        this.totalSeats = totalSeats;
+        this.availableSeats = totalSeats;
+        this.fares = new HashMap<>();
+        this.fares.put(TravelClass.FIRST_AC, 1000.0);
+        this.fares.put(TravelClass.SECOND_SLEEPER, 500.0);
+        this.fares.put(TravelClass.THIRD_SLEEPER, 300.0);
+    }
+
+    public int getTrainNo() { return trainNo; }
+    public String getTrainName() { return trainName; }
+    public String getSource() { return source; }
+    public String getDestination() { return destination; }
+    public int getTotalSeats() { return totalSeats; }
+    public int getAvailableSeats() { return availableSeats; }
+    public void setAvailableSeats(int availableSeats) { this.availableSeats = availableSeats; }
+    public double getFare(TravelClass travelClass) { return fares.get(travelClass); }
+
+    public boolean bookSeat() {
+        if (availableSeats > 0) {
+            availableSeats--;
+            return true;
+        }
+        return false;
+    }
+
+    public void cancelSeat() {
+        if (availableSeats < totalSeats) {
+            availableSeats++;
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "TrainNo: " + trainNo + ", Name: " + trainName + ", From: " + source +
+                ", To: " + destination + ", Seats Available: " + availableSeats + "/" + totalSeats;
+    }
+}
+
+// User class (Abstraction, base for Passenger)
+abstract class User {
+    private String name;
+    private int age;
+
+    public User(String name, int age) {
+        this.name = name;
+        this.age = age;
+
+    }
+
+    public String getName() { return name; }
+    public int getAge() { return age; }
+
+    // Polymorphism: to be overridden
+    public void displayUser() {
+        System.out.println("User: " + name + ", Age: " + age);
+    }
+}
+
+// Passenger class (Inheritance, Polymorphism)
+class Passenger extends User {
+    private String idProof;
+    private String mealChoice;
+
+    public Passenger(String name, int age, String idProof, String mealChoice) {
+        super(name, age);
+        this.idProof = idProof;
+        this.mealChoice = mealChoice;
+    }
+
+    public String getIdProof() { return idProof; }
+    public String getMealChoice() { return mealChoice; }
+
+    @Override
+    public void displayUser() {
+        System.out.println("Passenger: " + getName() + ", Age: " + getAge() + ", ID: " + idProof + ", Meal: " + mealChoice);
+    }
+}
+
+// Ticket class (Encapsulation, auto ticket + PNR generation)
+class Ticket {
+    private static int counter = 1000;
+    private final int ticketId;
+    private final String pnr;
+    private Passenger passenger;
+    private Train train;
+    private TravelClass travelClass;
+
+    public Ticket(Passenger passenger, Train train, TravelClass travelClass) {
+        this.ticketId = ++counter;
+        this.passenger = passenger;
+        this.train = train;
+        this.travelClass = travelClass;
+        this.pnr = "PNR" + train.getTrainNo() + ticketId;
+    }
+
+    public int getTicketId() { return ticketId; }
+    public String getPnr() { return pnr; }
+    public Passenger getPassenger() { return passenger; }
+    public Train getTrain() { return train; }
+    public TravelClass getTravelClass() { return travelClass; }
+
+    @Override
+    public String toString() {
+        return "PNR: " + pnr + "\n" +
+                "Ticket ID: " + ticketId + "\n" +
+                "Passenger: " + passenger.getName() + ", Age: " + passenger.getAge() + ", ID: " + passenger.getIdProof() + "\n" +
+                "Train: " + train.getTrainNo() + " - " + train.getTrainName() + "\n" +
+                "Route: " + train.getSource() + " to " + train.getDestination() + "\n" +
+                "Class: " + travelClass + ", Fare: " + train.getFare(travelClass) +
+                (passenger.getMealChoice().equalsIgnoreCase("yes") ? " + Meal Included" : "");
+    }
+}
+
+// BookingSystem class (Abstraction)
+class BookingSystem {
+    public void sortTrainsByAvailableSeats() {
+        trains.sort((a, b) -> Integer.compare(b.getAvailableSeats(), a.getAvailableSeats()));
+    }
+
+    public void sortTrainsByName() {
+        trains.sort((a, b) -> a.getTrainName().compareToIgnoreCase(b.getTrainName()));
+    }
+    private List<Train> trains = new ArrayList<>();
+    private List<Ticket> tickets = new ArrayList<>();
+
+    public void addTrain(Train train) {
+        trains.add(train);
+    }
+
+    public void viewTrains() {
+        System.out.println("\nAvailable Trains:");
+        for (Train t : trains) {
+            System.out.println(t);
+        }
+    }
+
+    public Train findTrain(int trainNo) {
+        for (Train t : trains) {
+            if (t.getTrainNo() == trainNo) return t;
+        }
+        return null;
+    }
+
+    public Ticket bookTicket(Passenger passenger, int trainNo, TravelClass travelClass) {
+        Train train = findTrain(trainNo);
+        if (train == null) {
+            System.out.println("Train not found!");
+            return null;
+        }
+        if (train.getAvailableSeats() <= 0) {
+            System.out.println("No seats available on this train!");
+            return null;
+        }
+        train.bookSeat();
+        Ticket ticket = new Ticket(passenger, train, travelClass);
+        tickets.add(ticket);
+        return ticket;
+    }
+
+    
+    public boolean removeTrain(int trainNo) {
+        Train target = findTrain(trainNo);
+        if (target == null) return false;
+        boolean removed = trains.remove(target);
+        if (removed) {
+            tickets.removeIf(t -> t.getTrain().getTrainNo() == trainNo);
+        }
+        return removed;
+    }
+}
+
+enum TravelClass {
+    FIRST_AC,
+    SECOND_SLEEPER,
+    THIRD_SLEEPER
+}
+
+
