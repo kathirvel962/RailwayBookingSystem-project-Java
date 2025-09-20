@@ -71,6 +71,8 @@ public class RAILWAY_BOOKING_SYSTEM {
                                     bookingSystem.addTrain(new Train(trainNo, trainName, source, destination, totalSeats));
                                     System.out.println("Train added successfully!");
                                     break;
+
+                                    
                                 case 2:
                                     bookingSystem.viewTrains();
                                     break;
