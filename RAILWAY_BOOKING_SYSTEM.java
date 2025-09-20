@@ -72,7 +72,7 @@ public class RAILWAY_BOOKING_SYSTEM {
                                     System.out.println("Train added successfully!");
                                     break;
 
-                                    
+
                                 case 2:
                                     bookingSystem.viewTrains();
                                     break;
@@ -346,7 +346,7 @@ class Passenger extends User {
 
 // Ticket class (Encapsulation, auto ticket + PNR generation)
 class Ticket {
-    private static int counter = 1000;
+    private static int counter = 500;
     private final int ticketId;
     private final String pnr;
     private Passenger passenger;
