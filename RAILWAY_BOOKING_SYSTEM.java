@@ -186,9 +186,9 @@ enum TravelClass {
 }
 
 public class RAILWAY_BOOKING_SYSTEM {
-    private static Map<String, String> userCredentials = new HashMap<>();
-    private static String loggedInUser = null;
-    private static boolean isAdminLoggedIn = false;
+    private static Map<String, String> userCredentials = new HashMap<>();//used to fill the user name and password
+    private static String loggedInUser = null; //to check the user is logged in or not
+    private static boolean isAdminLoggedIn = false; //to check the admin is logged in or not
 
     private static final String ADMIN_USERNAME = "kathir";
     private static final String ADMIN_PASSWORD = "kathir123";
@@ -313,7 +313,7 @@ public class RAILWAY_BOOKING_SYSTEM {
                                     String phone_number = sc.nextLine();
                                     System.out.print("Do you need to include meal (yes/no): ");
                                     String mealChoice = sc.nextLine();
-                                    Passenger passenger = new Passenger(name, age, phone_number, mealChoice);
+                                    Passenger passenger = new Passenger(name, age, phone_number, mealChoice);//sends the details to passenger class
 
                                     System.out.print("Enter Train Number: ");
                                     int trainNoToBook = sc.nextInt();
