@@ -118,7 +118,7 @@ class Ticket {
                 "Passenger: " + passenger.getName() + ", Age: " + passenger.getAge() + ", ID: " + passenger.getIdProof() + "\n" +
                 "Train: " + train.getTrainNo() + " - " + train.getTrainName() + "\n" +
                 "Route: " + train.getSource() + " to " + train.getDestination() + "\n" +
-                "Class: " + travelClass + ", Fare: " + train.getFare(travelClass) + (passenger.getMealChoice().equalsIgnoreCase("yes") ? " + Meal Included" : "");
+                "Class: " + travelClass + ", Fare: " + train.getFare(travelClass);
     }
 }
 
@@ -185,7 +185,7 @@ enum TravelClass {
     THIRD_SLEEPER
 }
 
-public class RAILWAY_BOOKING_SYSTEM {
+public class java {
     // In-memory user storage: username -> password
     private static Map<String, String> userCredentials = new HashMap<>();
     private static String loggedInUser = null;
