@@ -204,6 +204,7 @@ public class RAILWAY_BOOKING_SYSTEM {
             System.out.println("2. User Login");
             System.out.println("3. User Registration");
             System.out.println("0. Exit");
+            System.out.print("=======================================\n");
             System.out.print("Enter choice: ");
             int choice = sc.nextInt();
             sc.nextLine();
@@ -223,11 +224,12 @@ public class RAILWAY_BOOKING_SYSTEM {
                         System.out.println("Admin login successful!");
                         boolean adminMenu = true;
                         while (adminMenu) {
-                            System.out.println("\n--- Admin Panel ---");
+                            System.out.println("\n***** Admin Panel ******");
                             System.out.println("1. Add Train");
                             System.out.println("2. View Trains");
                             System.out.println("3. Delete Train");
                             System.out.println("0. Logout");
+                            System.out.println("***************************");
                             System.out.print("Enter choice: ");
                             int adminChoice = sc.nextInt();
                             sc.nextLine();
@@ -290,10 +292,11 @@ public class RAILWAY_BOOKING_SYSTEM {
                         System.out.println("User login successful!");
                         boolean userMenu = true;
                         while (userMenu) {
-                            System.out.println("\n--- User Menu ---");
+                            System.out.println("\n####### User Menu #######");
                             System.out.println("1. View Available Trains");
                             System.out.println("2. Book Ticket");
                             System.out.println("0. Logout");
+                            System.out.println("############################");
                             System.out.print("Enter choice: ");
                             int userChoice = sc.nextInt();
                             sc.nextLine();
