@@ -199,8 +199,6 @@ public class RAILWAY_BOOKING_SYSTEM {
             System.out.println("1. Admin Login");
             System.out.println("2. User Login");
             System.out.println("3. User Registration");
-            System.out.println("4. View Available Trains");
-            System.out.println("5. Book Ticket (User Only)");
             System.out.println("0. Exit");
             System.out.print("Enter choice: ");
             int choice = sc.nextInt();
@@ -285,6 +283,76 @@ public class RAILWAY_BOOKING_SYSTEM {
                     if (userCredentials.containsKey(username) && userCredentials.get(username).equals(password)) {
                         loggedInUser = username;
                         System.out.println("User login successful!");
+                        // User menu: view trains, book ticket, logout
+                        boolean userMenu = true;
+                        while (userMenu) {
+                            System.out.println("\n--- User Menu ---");
+                            System.out.println("1. View Available Trains");
+                            System.out.println("2. Book Ticket");
+                            System.out.println("0. Logout");
+                            System.out.print("Enter choice: ");
+                            int userChoice = sc.nextInt();
+                            sc.nextLine();
+                            switch (userChoice) {
+                                case 1:
+                                    bookingSystem.viewTrains();
+                                    break;
+                                case 2:
+                                    System.out.print("Enter Name: ");
+                                    String name = sc.nextLine();
+                                    System.out.print("Enter Age: ");
+                                    int age = sc.nextInt();
+                                    sc.nextLine();
+                                    System.out.print("Enter phone number: ");
+                                    String phone_number = sc.nextLine();
+                                    Passenger passenger = new Passenger(name, age, phone_number);
+                                    System.out.print("Enter Train Number: ");
+                                    int trainNoToBook = sc.nextInt();
+                                    sc.nextLine();
+                                    // Show fares for each class for the selected train
+                                    Train selectedTrain = bookingSystem.findTrain(trainNoToBook);
+                                    if (selectedTrain == null) {
+                                        System.out.println("Invalid train number.");
+                                        break;
+                                    }
+                                    System.out.println(String.format(
+                                            "Select Class: 1) First AC (%.2f)  2) Second Sleeper (%.2f)  3) Third Sleeper (%.2f)",
+                                            selectedTrain.getFare(TravelClass.FIRST_AC),
+                                            selectedTrain.getFare(TravelClass.SECOND_SLEEPER),
+                                            selectedTrain.getFare(TravelClass.THIRD_SLEEPER)));
+                                    int classChoice = sc.nextInt();
+                                    sc.nextLine();
+                                    TravelClass t=null;
+                                    switch (classChoice) {
+                                        case 1:
+                                            t = TravelClass.FIRST_AC;
+                                            break;
+                                        case 2:
+                                            t = TravelClass.SECOND_SLEEPER;
+                                            break;
+                                        case 3:
+                                            t = TravelClass.THIRD_SLEEPER;
+                                            break;
+                                        default:
+                                            System.out.println("Invalid class choice.");
+                                            break;
+                                    }
+                                    Ticket ticket = bookingSystem.bookTicket(passenger, trainNoToBook,t);
+                                    if (ticket != null) {
+                                        System.out.println("\nBooking Successful!\n" + ticket);
+                                    } else {
+                                        System.out.println("Booking Failed.");
+                                    }
+                                    break;
+                                case 0:
+                                    loggedInUser = null;
+                                    userMenu = false;
+                                    System.out.println("User logged out.");
+                                    break;
+                                default:
+                                    System.out.println("Invalid choice.");
+                            }
+                        }
                     } else {
                         System.out.println("Invalid username or password.");
                     }
@@ -300,60 +368,6 @@ public class RAILWAY_BOOKING_SYSTEM {
                     String newPass = sc.nextLine();
                     userCredentials.put(newUser, newPass);
                     System.out.println("Registration successful! You can now log in.");
-                    break;
-                case 4:
-                    bookingSystem.viewTrains();
-                    break;
-                case 5:
-                    if (loggedInUser == null) {
-                        System.out.println("You must be logged in as a user to book tickets.");
-                        break;
-                    }
-                    System.out.print("Enter Name: ");
-                    String name = sc.nextLine();
-                    System.out.print("Enter Age: ");
-                    int age = sc.nextInt();
-                    sc.nextLine();
-                    System.out.print("Enter ID Proof: ");
-                    String idProof = sc.nextLine();
-                    Passenger passenger = new Passenger(name, age, idProof);
-                    System.out.print("Enter Train Number: ");
-                    int trainNoToBook = sc.nextInt();
-                    sc.nextLine();
-                    // Show fares for each class for the selected train
-                    Train selectedTrain = bookingSystem.findTrain(trainNoToBook);
-                    if (selectedTrain == null) {
-                        System.out.println("Invalid train number.");
-                        break;
-                    }
-                    System.out.println(String.format(
-                            "Select Class: 1) First AC (%.2f)  2) Second Sleeper (%.2f)  3) Third Sleeper (%.2f)",
-                            selectedTrain.getFare(TravelClass.FIRST_AC),
-                            selectedTrain.getFare(TravelClass.SECOND_SLEEPER),
-                            selectedTrain.getFare(TravelClass.THIRD_SLEEPER)));
-                    int classChoice = sc.nextInt();
-                    sc.nextLine();
-                    TravelClass t=null;
-                    switch (classChoice) {
-                        case 1:
-                            t = TravelClass.FIRST_AC;
-                            break;
-                        case 2:
-                            t = TravelClass.SECOND_SLEEPER;
-                            break;
-                        case 3:
-                            t = TravelClass.THIRD_SLEEPER;
-                            break;
-                        default:
-                            System.out.println("Invalid class choice.");
-                            break;
-                    }
-                    Ticket ticket = bookingSystem.bookTicket(passenger, trainNoToBook,t);
-                    if (ticket != null) {
-                        System.out.println("\nBooking Successful!\n" + ticket);
-                    } else {
-                        System.out.println("Booking Failed.");
-                    }
                     break;
                 case 0:
                     System.out.println("Thank you for using the Railway Booking System!");
