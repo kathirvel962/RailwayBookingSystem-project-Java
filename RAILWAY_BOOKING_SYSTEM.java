@@ -1,4 +1,12 @@
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Scanner;
+
+
+
 
 // Train class (Encapsulation)
 class Train {
@@ -309,11 +317,19 @@ public class RAILWAY_BOOKING_SYSTEM {
                                     System.out.print("Enter Age: ");
                                     int age = sc.nextInt();
                                     sc.nextLine();
-                                    System.out.print("Enter phone number: ");
-                                    String phone_number = sc.nextLine();
-                                    System.out.print("Do you need to include meal (yes/no): ");
+                                    String phone_number = "";
+                                    while (true) {
+                                        System.out.print("Enter phone number: ");
+                                        phone_number = sc.nextLine();
+                                        if (phone_number.matches("\\d{10}")) {
+                                            break;
+                                        } else {
+                                            System.out.println("Please enter a valid 10-digit phone number.");
+                                        }
+                                    }
+                                    System.out.print("do you need to include meal (yes/no): ");
                                     String mealChoice = sc.nextLine();
-                                    Passenger passenger = new Passenger(name, age, phone_number, mealChoice);//sends the details to passenger class
+                                    Passenger passenger = new Passenger(name, age, phone_number, mealChoice);
 
                                     System.out.print("Enter Train Number: ");
                                     int trainNoToBook = sc.nextInt();
